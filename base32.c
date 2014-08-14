@@ -19,12 +19,19 @@
 
 #include "base32.h"
 
-int base32_decode(const uint8_t *encoded, uint8_t *result, int bufSize) {
+const uint8_t* base32_decode(const uint8_t *encoded, int length) {
   int buffer = 0;
   int bitsLeft = 0;
   int count = 0;
-  for (const uint8_t *ptr = encoded; count < bufSize && *ptr; ++ptr) {
-    uint8_t ch = *ptr;
+  int bufSize = length / 8;
+  const uint8_t* ptr;
+  uint8_t* result;
+  uint8_t ch;
+
+  result = calloc( bufSize, sizeof( uint8_t ) );
+
+  for (ptr = encoded; *ptr; ++ptr) {
+    ch = *ptr;
     if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n' || ch == '-') {
       continue;
     }
@@ -45,7 +52,8 @@ int base32_decode(const uint8_t *encoded, uint8_t *result, int bufSize) {
     } else if (ch >= '2' && ch <= '7') {
       ch -= '2' - 26;
     } else {
-      return -1;
+      free( result );
+      return NULL;
     }
 
     buffer |= ch;
@@ -54,24 +62,35 @@ int base32_decode(const uint8_t *encoded, uint8_t *result, int bufSize) {
       result[count++] = buffer >> (bitsLeft - 8);
       bitsLeft -= 8;
     }
+
+    if (count + 1 >= bufSize) {
+      // We've outgrown our buffer, so add another spot.
+      bufSize += 1;
+      result = realloc( result, bufSize * sizeof( uint8_t ) );
+    }
   }
   if (count < bufSize) {
     result[count] = '\000';
   }
-  return count;
+  return result;
 }
 
-int base32_encode(const uint8_t *data, int length, uint8_t *result,
-                  int bufSize) {
-  if (length < 0 || length > (1 << 28)) {
-    return -1;
-  }
+const uint8_t* base32_encode(const uint8_t *data, int length) {
+  int bufSize = length * 8;
+  uint8_t* result;
   int count = 0;
+
+  if (length < 0 || length > (1 << 28)) {
+    return NULL;
+  }
+
+  result = calloc( bufSize, sizeof( uint8_t ) );
+  
   if (length > 0) {
     int buffer = data[0];
     int next = 1;
     int bitsLeft = 8;
-    while (count < bufSize && (bitsLeft > 0 || next < length)) {
+    while (bitsLeft > 0 || next < length) {
       if (bitsLeft < 5) {
         if (next < length) {
           buffer <<= 8;
@@ -86,10 +105,15 @@ int base32_encode(const uint8_t *data, int length, uint8_t *result,
       int index = 0x1F & (buffer >> (bitsLeft - 5));
       bitsLeft -= 5;
       result[count++] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"[index];
+      if (count + 1 >= bufSize) {
+        // We've outgrown our buffer, so add another spot.
+        bufSize += 1;
+        result = realloc( result, bufSize * sizeof( uint8_t ) );
+      }
     }
   }
   if (count < bufSize) {
     result[count] = '\000';
   }
-  return count;
+  return result;
 }
