@@ -1,18 +1,19 @@
 
-LIBS = base32.so
+LIBS = base32alloc.so
+SLIBS = $(patsubst %.so,%.a,$(LIBS))
 
 all: dynamic static
 
 dynamic: $(LIBS)
 
-static: $(patsubst %.so,%.a,$(LIBS))
+static: $(SLIBS)
 
-c-test: base32.a
-	gcc -o ctest -static ctest.c -L. -lbase32
+c-test: $(SLIBS)
+	gcc -o ctest -static ctest.c -L. -lbase32alloc
 
-vala-test: base32.a
-	valac -C --vapidir=. --pkg base32 --Xcc -I. --Xcc -L. --Xcc -lbase32 vtest.vala
-	valac --vapidir=. --pkg base32 --Xcc -I. --Xcc -L. --Xcc -lbase32 vtest.vala
+vala-test: $(SLIBS)
+	valac -C --vapidir=. --pkg base32alloc --Xcc -I. vtest.vala
+	valac --vapidir=. --pkg base32alloc --Xcc -I. --Xcc -L. --Xcc -lbase32alloc vtest.vala
 	#gcc -o test vtest.c -L. -lbase32
 
 clean:

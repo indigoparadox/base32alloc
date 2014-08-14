@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-#include "base32.h"
+#include "base32alloc.h"
 
 int main( int argc, char* argv[] ) {
 	uint8_t* buffer_out;
