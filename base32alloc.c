@@ -17,7 +17,7 @@
 
 #include <string.h>
 
-#include "base32.h"
+#include "base32alloc.h"
 
 const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length) {
   int buffer = 0;
