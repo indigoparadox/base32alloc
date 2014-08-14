@@ -31,7 +31,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-const uint8_t* base32_decode(const uint8_t *encoded, int length);
-const uint8_t* base32_encode(const uint8_t *data, int length);
+const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length);
+const uint8_t* base32_encode_alloc(const uint8_t *data, int length);
 
 #endif /* _BASE32_H_ */
