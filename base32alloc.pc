@@ -1,0 +1,5 @@
+Name: base32alloc
+Description: A C library for converting to/from base32 encoding.
+Requires:
+Version: 20140814
+Libs: -lbase32
