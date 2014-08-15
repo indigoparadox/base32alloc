@@ -2,6 +2,9 @@
 LIBS = base32alloc.so
 SLIBS = $(patsubst %.so,%.a,$(LIBS))
 
+CFLAGS += -DBSTRING
+LDFLAGS += -lbstrlib
+
 all: dynamic static
 
 dynamic: $(LIBS)
@@ -10,6 +13,9 @@ static: $(SLIBS)
 
 c-test: $(SLIBS)
 	gcc -o ctest -static ctest.c -L. -lbase32alloc
+
+b-test: $(SLIBS)
+	gcc -o btest -static btest.c -L. -lbase32alloc -lbstrlib
 
 vala-test: $(SLIBS)
 	valac -C --vapidir=. --pkg base32alloc --Xcc -I. vtest.vala
@@ -26,7 +32,7 @@ clean:
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 %.so: %.dynamic.o
-	$(CC) -shared -Wl,-soname,lib$@ -o lib$@ $<
+	$(CC) $(LDFLAGS) -shared -Wl,-soname,lib$@ -o lib$@ $<
 
 %.a: %.static.o
 	$(AR) rcs lib$@ $<

@@ -31,7 +31,16 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifdef BSTRING
+#include <bstrlib.h>
+#endif /* BSTRING */
+
 const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length);
 const uint8_t* base32_encode_alloc(const uint8_t *data, int length);
+
+#ifdef BSTRING
+bstring base32_decode_bstr(bstring encoded);
+bstring base32_encode_bstr(bstring data);
+#endif /* BSTRING */
 
 #endif /* _BASE32_H_ */
