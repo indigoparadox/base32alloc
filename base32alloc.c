@@ -19,7 +19,9 @@
 
 #include "base32alloc.h"
 
-const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length) {
+const uint8_t* base32_decode_alloc(
+   const uint8_t *encoded, int length, int* decoded_len
+) {
   int buffer = 0;
   int bitsLeft = 0;
   int count = 0;
@@ -52,8 +54,11 @@ const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length) {
     } else if (ch >= '2' && ch <= '7') {
       ch -= '2' - 26;
     } else {
-      free( result );
-      return NULL;
+      // XXX?
+      //free(result);
+      //return NULL;
+      //return result;
+      break;
     }
 
     buffer |= ch;
@@ -68,9 +73,13 @@ const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length) {
       bufSize += 1;
       result = realloc( result, bufSize * sizeof( uint8_t ) );
     }
+
   }
   if (count < bufSize) {
     result[count] = '\000';
+  }
+  if (NULL != decoded_len) {
+    *decoded_len = count;
   }
   return result;
 }
