@@ -121,7 +121,7 @@ const uint8_t* base32_encode_alloc(const uint8_t *data, int length) {
 
 #ifdef BSTRING
 
-bstring base32_decode_bstring(bstring encoded) {
+bstring base32_decode_bstr(bstring encoded) {
   int buffer = 0;
   int bitsLeft = 0;
   int count = 0;
@@ -155,9 +155,11 @@ bstring base32_decode_bstring(bstring encoded) {
     } else if (ch >= '2' && ch <= '7') {
       ch -= '2' - 26;
     } else {
-      bdestroy(result);
+      // XXX?
+      //bdestroy(result);
       bdestroy(chout);
-      return NULL;
+      //return NULL;
+      return result;
     }
 
     buffer |= ch;
