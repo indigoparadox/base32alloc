@@ -35,7 +35,9 @@
 #include <bstrlib.h>
 #endif /* BSTRING */
 
-const uint8_t* base32_decode_alloc(const uint8_t *encoded, int length);
+const uint8_t* base32_decode_alloc(
+   const uint8_t *encoded, int length, int* decoded_len
+);
 const uint8_t* base32_encode_alloc(const uint8_t *data, int length);
 
 #ifdef BSTRING
